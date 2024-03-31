@@ -63,10 +63,11 @@ open class Tile: UIView {
 open class BasicTile: Tile {
     open lazy var label: UILabel = {
         let label = UILabel()
-        label.textAlignment = .left
+        label.textAlignment = .natural
         label.text = "\(index)"
+        label.adjustsFontSizeToFitWidth = true
         label.textColor = color.luminance > 0.6 ? .black : .white
-        label.frame = CGRect(x: 5, y: 5, width: frame.width, height: 20)
+        //label.frame = CGRect(x: frame.width*0.05, y: frame.height*0.05, width: frame.width-frame.width*0.05, height: 20/*frame.height-frame.height*0.05*/)
         return label
     }()
     
