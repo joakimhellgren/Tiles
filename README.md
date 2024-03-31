@@ -1,7 +1,7 @@
-# Tiles - Multi touch grid for iOS
+# Tiles - Swift Multi Touch Controller
 <p><img src="https://img.shields.io/badge/iOS-14.0+-blue.svg"/></p>
 <svg><img src="https://cdn.glitch.global/3f78c00c-cde8-40cf-bf59-1d274881b8e9/Tiles_Logotype_V2.svg?v=1711907257234"/></svg>
-Tiles is a lightweight package for creating highly customizable multi touch grid-centric layouts for iOS.
+Responsive and customizable multi touch grid written in Swift inspired by "Akai MPC", "Ableton Push" & "Monome Grid".
 
 ## Installation
 1. Select File -> Add Packages...
