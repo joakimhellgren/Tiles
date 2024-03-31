@@ -1,6 +1,7 @@
-# Tiles - Multi touh grid for iOS
+# Tiles - Multi touch grid for iOS
 <p><img src="https://img.shields.io/badge/iOS-14.0+-blue.svg"/></p>
-Tiles is a lightweight package for creating highly customizable multi touch grud-centric layouts for iOS.
+<svg><img src="https://cdn.glitch.global/3f78c00c-cde8-40cf-bf59-1d274881b8e9/Tiles_Logotype_V2.svg?v=1711905351164"/></svg>
+Tiles is a lightweight package for creating highly customizable multi touch grid-centric layouts for iOS.
 
 ## Installation
 1. Select File -> Add Packages...
