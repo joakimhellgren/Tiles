@@ -67,7 +67,7 @@ open class BasicTile: Tile {
         label.text = "\(index)"
         label.adjustsFontSizeToFitWidth = true
         label.textColor = color.luminance > 0.6 ? .black : .white
-        //label.frame = CGRect(x: frame.width*0.05, y: frame.height*0.05, width: frame.width-frame.width*0.05, height: 20/*frame.height-frame.height*0.05*/)
+        label.frame = CGRect(x: frame.width*0.05, y: frame.height*0.05, width: frame.width-frame.width*0.05, height: 20/*frame.height-frame.height*0.05*/)
         return label
     }()
     
