@@ -9,6 +9,7 @@ public struct Tiles<T: Tile>: UIViewControllerRepresentable {
     var ascending: Bool
     var horizontal: Bool
     var spacing: Double
+    var latchTiles: Bool
     var delegate: TileDelegate?
     
     public init(
@@ -18,6 +19,7 @@ public struct Tiles<T: Tile>: UIViewControllerRepresentable {
         ascending: Bool = true,
         horizontal: Bool = true,
         spacing: Double = 1.0,
+        latchTiles: Bool = true,
         tile: T.Type = BasicTile.self,
         delegate: TileDelegate? = nil
     ) {
@@ -27,6 +29,7 @@ public struct Tiles<T: Tile>: UIViewControllerRepresentable {
         self.ascending = ascending
         self.horizontal = horizontal
         self.spacing = spacing
+        self.latchTiles = latchTiles
         self.delegate = delegate
         self.uiViewController = TileViewController(
             spacing: spacing,
@@ -52,6 +55,7 @@ public struct Tiles<T: Tile>: UIViewControllerRepresentable {
     private func update(_ uiViewController: TileViewController<T>) {
         uiViewController.tileDelegate = delegate
         uiViewController.spacing = spacing
+        uiViewController.latchTiles = latchTiles
         uiViewController.update(rows: rows, columns: columns, horizontal: horizontal, forward: forward, ascending: ascending)
     }
 }

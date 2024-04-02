@@ -14,7 +14,9 @@ Responsive and customizable multi touch grid written in Swift inspired by "Akai 
 ## Usage
 
 ### Basic example
+
 ```swift
+
 import Tiles
 import SwiftUI
 
@@ -23,11 +25,13 @@ struct ContentView: View {
         Tiles()
     }
 }
+
 ```
 
 ### Styling example
 
 ```swift
+
 import Tiles
 import SwiftUI
 
@@ -77,6 +81,7 @@ struct ContentView: View {
         Tiles(tile: MyGridTile.self)
     }
 }
+
 ```
 
 ### Advanced example
@@ -84,8 +89,8 @@ The Grid can be resized, realigned, and freely modified without compromising the
 Please note however that when a tile is no longer visible, it's state will be discarded.
 
 ```swift
-import SwiftUI
 import Tiles
+import SwiftUI
 
 @Observable
 class GridContext {
@@ -95,14 +100,15 @@ class GridContext {
     var forward: Bool
     var ascending: Bool
     var spacing: CGFloat
-    
+    var latch: Bool
     init(
         rows: Int = 4,
         columns: Int = 4,
         horizontal: Bool = true,
         forward: Bool = true,
         ascending: Bool = true,
-        spacing: CGFloat = 1.0
+        spacing: CGFloat = 1.0,
+        latch: Bool = false
     ) {
         self.rows = rows
         self.columns = columns
@@ -110,6 +116,7 @@ class GridContext {
         self.forward = forward
         self.ascending = ascending
         self.spacing = spacing
+        self.latch = latch
     }
 }
 
@@ -139,6 +146,10 @@ struct ContentView: View {
                 gridContext.ascending ? "Ascending" : "Descending",
                 isOn: $gridContext.ascending
             )
+            Toggle(
+                gridContext.latch ? "Latch ON" : "Latch OFF",
+                isOn: $gridContext.latch
+            )
             Stepper(
                 "Rows: \(gridContext.rows)",
                 value: $gridContext.rows,
@@ -154,11 +165,14 @@ struct ContentView: View {
                 columns: gridContext.columns,
                 forward: gridContext.forward, 
                 ascending: gridContext.ascending,
-                horizontal: gridContext.horizontal, 
+                horizontal: gridContext.horizontal,
                 spacing: gridContext.spacing,
+                latchTiles: gridContext.latch,
                 delegate: gridContext
             )
             .padding()
         }
     }
 }
+
+```

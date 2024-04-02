@@ -14,6 +14,9 @@ public class TileViewController<T: Tile>: UIViewController {
     
     public var rows: Int
     public var columns: Int
+    
+    public var latchTiles: Bool
+    
     public weak var tileDelegate: TileDelegate?
     
     public init(
@@ -26,6 +29,7 @@ public class TileViewController<T: Tile>: UIViewController {
         rows: Int = 5,
         columns: Int = 5,
         tileType: T.Type,
+        latchTiles: Bool = true,
         delegate: TileDelegate? = nil
     ) {
         self.horizontal = horizontal
@@ -34,6 +38,7 @@ public class TileViewController<T: Tile>: UIViewController {
         self.forward = horizontal ? forward : !ascending
         self.ascending = horizontal ? ascending : forward
         self.spacing = spacing
+        self.latchTiles = latchTiles
         self.tiles = [T]()
         self.tileDelegate = delegate
         
@@ -81,6 +86,10 @@ extension TileViewController {
         
         self.forward = horizontal ? forward : !ascending
         self.ascending = horizontal ? ascending : forward
+        
+        if !latchTiles {
+            resetTiles()
+        }
         
         viewDidLayoutSubviews()
     }
@@ -149,11 +158,18 @@ extension TileViewController {
         tiles.forEach { tile in
             let isPressed = locations.first(where: {tile.frame.contains($0)}) != nil
             
-            if !tile.isPressed && isPressed {
+            if latchTiles && (!tile.isPressed && isPressed) {
                 tile.latch.toggle()
             }
             
             tile.isPressed = isPressed
+        }
+    }
+    
+    private func resetTiles() {
+        tiles.forEach { tile in
+            tile.isPressed = false
+            tile.latch = false
         }
     }
 }
