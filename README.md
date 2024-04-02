@@ -3,11 +3,13 @@
 <svg><img src="https://cdn.glitch.global/3f78c00c-cde8-40cf-bf59-1d274881b8e9/Tiles_Logotype_V2.svg?v=1711907257234"/></svg>
 Responsive and customizable multi touch grid written in Swift inspired by "Akai MPC", "Ableton Push" & "Monome Grid".
 
+<img src="https://cdn.glitch.global/3f78c00c-cde8-40cf-bf59-1d274881b8e9/Screenshot%202024-04-02%20at%2010.18.32.png?v=1712045952476">
+
 ## Installation
 1. Select File -> Add Packages...
 2. Click the `+` icon on the bottom left of the Collections sidebar on the left.
 3. Choose `Add Swift Package Collection` from the pop-up menu.
-4. In the `Add Package Collection` dialog box, enter `https://github.com/joakimhellgren/MPC.git` as the URL and click the "Load" button.
+4. In the `Add Package Collection` dialog box, enter `https://github.com/joakimhellgren/Tiles.git` as the URL and click the "Load" button.
 
 ## Usage
 
