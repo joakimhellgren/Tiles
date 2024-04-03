@@ -1,72 +1,15 @@
 import UIKit
 
 public protocol TileDelegate: AnyObject {
-    func didPressTile(at index: Int, isPressed: Bool)
-    func didLatchTile(at index: Int, isLatched: Bool)
+    func didPressTile(_ tile: Tile)
+    func didLatchTile(_ tile: Tile)
+    func didSelectTile(_ tile: Tile)
 }
 
 open class Tile: UIView {
     public var index: Int
     public weak var delegate: TileDelegate?
     
-    public var isPressed: Bool = false {
-        willSet {
-            if newValue, !isPressed {
-                delegate?.didPressTile(at: index, isPressed: true)
-            } else if !newValue, isPressed {
-                delegate?.didPressTile(at: index, isPressed: false)
-            }
-        }
-        
-        didSet {
-            didPress(isPressed)
-        }
-    }
-    
-    public var latch: Bool = false {
-        willSet {
-            if newValue, !latch {
-                delegate?.didLatchTile(at: index, isLatched: true)
-            } else if !newValue, latch {
-                delegate?.didLatchTile(at: index, isLatched: false)
-            }
-        }
-        
-        didSet {
-            didLatch(latch)
-        }
-    }
-    
-    public var isSelected: Bool = false {
-        didSet {
-            backgroundColor = isSelected ? .red : color
-        }
-    }
-    
-    required public init(frame: CGRect, index: Int, isPressed: Bool = false, latch: Bool = false, isSelected: Bool = false, delegate: TileDelegate? = nil) {
-        self.index = index
-        self.latch = latch
-        self.isPressed = isPressed
-        self.isSelected = isSelected
-        self.delegate = delegate
-        super.init(frame: frame)
-        
-        self.backgroundColor = color
-    }
-    
-    required public init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-    
-    open var color: UIColor {
-        isPressed ? .label : isSelected ? .red : latch ? .link : .separator
-    }
-    
-    open func didPress(_ isPressed: Bool) {}
-    open func didLatch(_ isLatched: Bool) {}
-}
-
-open class BasicTile: Tile {
     open lazy var label: UILabel = {
         let label = UILabel()
         label.textAlignment = .natural
@@ -77,6 +20,44 @@ open class BasicTile: Tile {
         return label
     }()
     
+    open var color: UIColor {
+        isPressed ? .label : isSelected ? .red : latch ? .link : .separator
+    }
+    
+    open var textColor: UIColor {
+        color.luminance > 0.6 ? .black : .white
+    }
+    
+    public var isPressed: Bool = false {
+        didSet {
+            backgroundColor = color
+            label.textColor = textColor
+            
+            delegate?.didPressTile(self)
+            didPress()
+        }
+    }
+    
+    public var latch: Bool = false {
+        didSet {
+            backgroundColor = color
+            label.textColor = textColor
+            
+            delegate?.didLatchTile(self)
+            didLatch()
+        }
+    }
+    
+    public var isSelected: Bool = false {
+        didSet {
+            backgroundColor = color
+            label.textColor = textColor
+            
+            delegate?.didSelectTile(self)
+            didSelect()
+        }
+    }
+    
     required public init(
         frame: CGRect,
         index: Int,
@@ -85,20 +66,23 @@ open class BasicTile: Tile {
         isSelected: Bool = false,
         delegate: TileDelegate? = nil
     ) {
-        super.init(frame: frame, index: index, isPressed: isPressed, latch: latch, isSelected: isSelected, delegate: delegate)
-        self.backgroundColor = isSelected ? .red : color
+        self.index = index
+        self.latch = latch
+        self.isPressed = isPressed
+        self.isSelected = isSelected
+        self.delegate = delegate
+        super.init(frame: frame)
+        
+        label.textColor = textColor
         self.addSubview(label)
+        self.backgroundColor = color
     }
     
     required public init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
-    
-    
-    override open func didPress(_ isPressed: Bool) {
-        backgroundColor = color
-        label.textColor = color.luminance > 0.6 ? .black : .white
-    }
+    open func didPress() {}
+    open func didLatch() {}
+    open func didSelect() {}
 }
-
