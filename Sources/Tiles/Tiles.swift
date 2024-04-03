@@ -35,16 +35,36 @@ public struct Tiles<T : Tile, C : TileContext>: UIViewControllerRepresentable {
     }
     
     public func updateUIViewController(_ uiViewController: TileViewController<T>, context: Context) {
-        uiViewController.spacing = tileContext.spacing
-        uiViewController.latchTiles = tileContext.latchTiles
-        uiViewController.selectedTile = tileContext.selectedTile
-        uiViewController.update(
-            rows: tileContext.rows,
-            columns: tileContext.columns,
-            horizontal: tileContext.horizontal,
-            forward: tileContext.forward,
-            ascending: tileContext.ascending
-        )
+        let vc = uiViewController
+        
+        if vc.spacing != tileContext.spacing {
+            vc.spacing = tileContext.spacing
+        }
+        if vc.latchTiles != tileContext.latchTiles {
+            vc.latchTiles = tileContext.latchTiles
+        }
+        if vc.selectedTile != tileContext.selectedTile {
+            vc.selectedTile = tileContext.selectedTile
+        }
+        if vc.rows != tileContext.rows {
+            vc.rows = tileContext.rows
+        }
+        if vc.columns != tileContext.columns {
+            vc.columns = tileContext.columns
+        }
+        
+        if vc.forward != tileContext.forward {
+            vc.forward = tileContext.forward
+        }
+        
+        if vc.ascending != tileContext.ascending {
+            vc.ascending = tileContext.ascending
+        }
+        
+        if vc.horizontal != tileContext.horizontal {
+            vc.horizontal = tileContext.horizontal
+        }
+        
     }
     
     public func makeCoordinator() -> Coordinator {
