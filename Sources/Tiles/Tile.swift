@@ -1,14 +1,7 @@
 import UIKit
 
-public protocol TileDelegate: AnyObject {
-    func didPressTile(_ tile: Tile)
-    func didLatchTile(_ tile: Tile)
-    func didSelectTile(_ tile: Tile)
-}
-
 open class Tile: UIView {
     public var index: Int
-    public weak var delegate: TileDelegate?
     
     open lazy var label: UILabel = {
         let label = UILabel()
@@ -16,7 +9,8 @@ open class Tile: UIView {
         label.text = "\(index)"
         label.adjustsFontSizeToFitWidth = true
         label.textColor = color.luminance > 0.6 ? .black : .white
-        label.frame = CGRect(x: frame.width*0.05, y: frame.height*0.05, width: frame.width-frame.width*0.05, height: 20/*frame.height-frame.height*0.05*/)
+        label.frame = CGRect(x: frame.width*0.05, y: frame.height*0.05,
+                             width: frame.width-frame.width*0.05, height: 20)
         return label
     }()
     
@@ -32,8 +26,6 @@ open class Tile: UIView {
         didSet {
             backgroundColor = color
             label.textColor = textColor
-            
-            delegate?.didPressTile(self)
             didPress()
         }
     }
@@ -42,8 +34,6 @@ open class Tile: UIView {
         didSet {
             backgroundColor = color
             label.textColor = textColor
-            
-            delegate?.didLatchTile(self)
             didLatch()
         }
     }
@@ -52,8 +42,6 @@ open class Tile: UIView {
         didSet {
             backgroundColor = color
             label.textColor = textColor
-            
-            delegate?.didSelectTile(self)
             didSelect()
         }
     }
@@ -63,14 +51,12 @@ open class Tile: UIView {
         index: Int,
         isPressed: Bool = false,
         latch: Bool = false,
-        isSelected: Bool = false,
-        delegate: TileDelegate? = nil
+        isSelected: Bool = false
     ) {
         self.index = index
         self.latch = latch
         self.isPressed = isPressed
         self.isSelected = isSelected
-        self.delegate = delegate
         super.init(frame: frame)
         
         label.textColor = textColor

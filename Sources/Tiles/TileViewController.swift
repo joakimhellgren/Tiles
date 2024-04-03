@@ -24,8 +24,6 @@ public class TileViewController<T: Tile>: UIViewController {
     public var rows: Int
     public var columns: Int
     
-    public weak var tileDelegate: TileDelegate?
-    
     public init(
         nibName nibNameOrNil: String? = nil,
         bundle nibBundleOrNil: Bundle? = nil,
@@ -37,8 +35,7 @@ public class TileViewController<T: Tile>: UIViewController {
         columns: Int = 5,
         tileType: T.Type,
         latchTiles: Bool = true,
-        selectedTile: Int? = nil,
-        delegate: TileDelegate? = nil
+        selectedTile: Int? = nil
     ) {
         self.horizontal = horizontal
         self.rows = horizontal ? rows : columns
@@ -48,7 +45,6 @@ public class TileViewController<T: Tile>: UIViewController {
         self.spacing = spacing
         self.latchTiles = latchTiles
         self.selectedTile = selectedTile
-        self.tileDelegate = delegate
         
         super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
     }
@@ -117,7 +113,7 @@ extension TileViewController {
             let isPressed = tmpTiles.first(where: { $0.index == tileIndex })?.isPressed ?? false
             let latch = tmpTiles.first(where: { $0.index == tileIndex })?.latch ?? false
             let isSelected = tileIndex == selectedTile
-            let tile = T(frame: tileRect, index: tileIndex, isPressed: isPressed, latch: latch, isSelected: isSelected, delegate: tileDelegate)
+            let tile = T(frame: tileRect, index: tileIndex, isPressed: isPressed, latch: latch, isSelected: isSelected)
             
             tilePosition(&position, in: view.frame, with: offset)
             tiles.append(tile)
