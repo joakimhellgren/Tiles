@@ -2,22 +2,28 @@ import UIKit
 
 public class TileViewController<T: Tile>: UIViewController {
     private static var touchCapacity: Int { 10 }
-    private var touches = NSMutableSet(capacity: Int(touchCapacity))
+    public var touches = NSMutableSet(capacity: Int(touchCapacity))
     
-    private var tiles: [T]
+    public var tiles = [T]()
     public var selectedTile: Int? {
         didSet {
             tiles.forEach { $0.isSelected = selectedTile == $0.index }
         }
     }
+    public var latchTiles: Bool
     
-    public var horizontal: Bool
+    public var horizontal: Bool {
+        didSet {
+            updateLayout()
+        }
+    }
     public var forward: Bool
     public var ascending: Bool
+    
     public var spacing: CGFloat
     public var rows: Int
     public var columns: Int
-    public var latchTiles: Bool
+    
     public weak var tileDelegate: TileDelegate?
     
     public init(
@@ -41,7 +47,6 @@ public class TileViewController<T: Tile>: UIViewController {
         self.ascending = horizontal ? ascending : forward
         self.spacing = spacing
         self.latchTiles = latchTiles
-        self.tiles = [T]()
         self.selectedTile = selectedTile
         self.tileDelegate = delegate
         
@@ -78,11 +83,9 @@ public class TileViewController<T: Tile>: UIViewController {
 }
 
 extension TileViewController {
-    public func update(rows: Int, columns: Int, horizontal: Bool, forward: Bool, ascending: Bool) {
+    public func updateLayout() {
         let rows = max(1, rows)
         let columns = max(1, columns)
-        
-        self.horizontal = horizontal
         
         self.rows = horizontal ? rows : columns
         self.columns = horizontal ? columns : rows
@@ -90,10 +93,9 @@ extension TileViewController {
         self.forward = horizontal ? forward : !ascending
         self.ascending = horizontal ? ascending : forward
         
-        
     }
     
-    private func draw() {
+    public func draw() {
         let width = tileSize(in: view.frame.size.width, with: horizontal ? rows : columns, spacing: spacing)
         let height = tileSize(in: view.frame.size.height, with: horizontal ? columns : rows, spacing: spacing)
         
@@ -114,7 +116,7 @@ extension TileViewController {
             
             let isPressed = tmpTiles.first(where: { $0.index == tileIndex })?.isPressed ?? false
             let latch = tmpTiles.first(where: { $0.index == tileIndex })?.latch ?? false
-            let isSelected = tmpTiles.first(where: { $0.index == tileIndex })?.isSelected ?? false
+            let isSelected = tileIndex == selectedTile
             let tile = T(frame: tileRect, index: tileIndex, isPressed: isPressed, latch: latch, isSelected: isSelected, delegate: tileDelegate)
             
             tilePosition(&position, in: view.frame, with: offset)
@@ -124,7 +126,7 @@ extension TileViewController {
         }
     }
     
-    private func tilePosition(_ position: inout CGPoint, in frame: CGRect, with offset: CGPoint) {
+    public func tilePosition(_ position: inout CGPoint, in frame: CGRect, with offset: CGPoint) {
         position.x += offset.x
         
         if position.x >= frame.size.width {
@@ -135,7 +137,7 @@ extension TileViewController {
         }
     }
     
-    private func tileIndex(from index: Int) -> Int {
+    public func tileIndex(from index: Int) -> Int {
         var row = horizontal ? index % rows : index / columns
         row = forward ? row : rows - 1 - row
         
@@ -146,7 +148,7 @@ extension TileViewController {
         return i
     }
     
-    private func tileSize(in size: CGFloat, with division: Int, spacing: CGFloat) -> CGFloat {
+    public func tileSize(in size: CGFloat, with division: Int, spacing: CGFloat) -> CGFloat {
         (size - (spacing * CGFloat(division - 1))) / CGFloat(division)
     }
     
