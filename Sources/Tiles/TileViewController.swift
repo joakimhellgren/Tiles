@@ -2,21 +2,22 @@ import UIKit
 
 public class TileViewController<T: Tile>: UIViewController {
     private static var touchCapacity: Int { 10 }
-    
     private var touches = NSMutableSet(capacity: Int(touchCapacity))
+    
     private var tiles: [T]
+    public var selectedTile: Int? {
+        didSet {
+            tiles.forEach { $0.isSelected = selectedTile == $0.index }
+        }
+    }
     
     public var horizontal: Bool
     public var forward: Bool
     public var ascending: Bool
-    
     public var spacing: CGFloat
-    
     public var rows: Int
     public var columns: Int
-    
     public var latchTiles: Bool
-    
     public weak var tileDelegate: TileDelegate?
     
     public init(
@@ -30,6 +31,7 @@ public class TileViewController<T: Tile>: UIViewController {
         columns: Int = 5,
         tileType: T.Type,
         latchTiles: Bool = true,
+        selectedTile: Int? = nil,
         delegate: TileDelegate? = nil
     ) {
         self.horizontal = horizontal
@@ -40,6 +42,7 @@ public class TileViewController<T: Tile>: UIViewController {
         self.spacing = spacing
         self.latchTiles = latchTiles
         self.tiles = [T]()
+        self.selectedTile = selectedTile
         self.tileDelegate = delegate
         
         super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
@@ -87,11 +90,7 @@ extension TileViewController {
         self.forward = horizontal ? forward : !ascending
         self.ascending = horizontal ? ascending : forward
         
-        if !latchTiles {
-            resetTiles()
-        }
         
-        viewDidLayoutSubviews()
     }
     
     private func draw() {
@@ -111,12 +110,12 @@ extension TileViewController {
                 origin: position,
                 size: CGSize(width: width, height: height)
             )
-            
             let tileIndex = tileIndex(from: index)
             
             let isPressed = tmpTiles.first(where: { $0.index == tileIndex })?.isPressed ?? false
             let latch = tmpTiles.first(where: { $0.index == tileIndex })?.latch ?? false
-            let tile = T(frame: tileRect, index: tileIndex, isPressed: isPressed, latch: latch, delegate: tileDelegate)
+            let isSelected = tmpTiles.first(where: { $0.index == tileIndex })?.isSelected ?? false
+            let tile = T(frame: tileRect, index: tileIndex, isPressed: isPressed, latch: latch, isSelected: isSelected, delegate: tileDelegate)
             
             tilePosition(&position, in: view.frame, with: offset)
             tiles.append(tile)
@@ -151,7 +150,7 @@ extension TileViewController {
         (size - (spacing * CGFloat(division - 1))) / CGFloat(division)
     }
     
-    private func updateTiles() {
+    public func updateTiles() {
         let touches = touches.allObjects as! [UITouch]
         let locations = touches.map { $0.location(in: view) }
         
@@ -166,7 +165,7 @@ extension TileViewController {
         }
     }
     
-    private func resetTiles() {
+    public func resetTiles() {
         tiles.forEach { tile in
             tile.isPressed = false
             tile.latch = false

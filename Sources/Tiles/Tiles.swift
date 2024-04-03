@@ -1,62 +1,61 @@
 import SwiftUI
 
-public struct Tiles<T: Tile>: UIViewControllerRepresentable {
-    private let uiViewController: TileViewController<T>
+public protocol TileContext: ObservableObject {
+    var rows: Int { get set }
+    var columns: Int { get set }
+    var forward: Bool { get set }
+    var ascending: Bool { get set }
+    var horizontal: Bool { get set }
+    var spacing: Double { get set }
+    var latchTiles: Bool { get set }
+    var selectedTile: Int? { get set }
+}
+
+public struct Tiles<T : Tile, C : TileContext>: UIViewControllerRepresentable {
+    public var tile: T.Type
+    @ObservedObject public var tileContext: C
     
-    var rows: Int
-    var columns: Int
-    var forward: Bool
-    var ascending: Bool
-    var horizontal: Bool
-    var spacing: Double
-    var latchTiles: Bool
-    var delegate: TileDelegate?
-    
-    public init(
-        rows: Int = 5,
-        columns: Int = 5,
-        forward: Bool = true,
-        ascending: Bool = true,
-        horizontal: Bool = true,
-        spacing: Double = 1.0,
-        latchTiles: Bool = true,
-        tile: T.Type = BasicTile.self,
-        delegate: TileDelegate? = nil
-    ) {
-        self.rows = rows
-        self.columns = columns
-        self.forward = forward
-        self.ascending = ascending
-        self.horizontal = horizontal
-        self.spacing = spacing
-        self.latchTiles = latchTiles
-        self.delegate = delegate
-        self.uiViewController = TileViewController(
-            spacing: spacing,
-            horizontal: horizontal,
-            forward: forward,
-            ascending: ascending,
-            rows: rows,
-            columns: columns,
-            tileType: tile,
-            delegate: delegate
-        )
+    public init(tile: T.Type, tileContext: C) {
+        self.tile = tile
+        self.tileContext = tileContext
     }
     
     public func makeUIViewController(context: Context) -> TileViewController<T> {
-        update(uiViewController)
-        return uiViewController
+        TileViewController<T>(
+            spacing: tileContext.spacing,
+            horizontal: tileContext.horizontal,
+            forward: tileContext.forward,
+            ascending: tileContext.ascending,
+            rows: tileContext.rows,
+            columns: tileContext.columns,
+            tileType: tile,
+            latchTiles: tileContext.latchTiles,
+            selectedTile: tileContext.selectedTile
+        )
     }
     
     public func updateUIViewController(_ uiViewController: TileViewController<T>, context: Context) {
-        update(uiViewController)
+        uiViewController.spacing = tileContext.spacing
+        uiViewController.latchTiles = tileContext.latchTiles
+        uiViewController.selectedTile = tileContext.selectedTile
+        uiViewController.update(
+            rows: tileContext.rows,
+            columns: tileContext.columns,
+            horizontal: tileContext.horizontal,
+            forward: tileContext.forward,
+            ascending: tileContext.ascending
+        )
     }
     
-    private func update(_ uiViewController: TileViewController<T>) {
-        uiViewController.tileDelegate = delegate
-        uiViewController.spacing = spacing
-        uiViewController.latchTiles = latchTiles
-        uiViewController.update(rows: rows, columns: columns, horizontal: horizontal, forward: forward, ascending: ascending)
+    public func makeCoordinator() -> Coordinator {
+        Coordinator(self)
+    }
+    
+    public class Coordinator: NSObject {
+        var parent: Tiles
+        init(_ parent: Tiles) {
+            self.parent = parent
+        }
     }
 }
 

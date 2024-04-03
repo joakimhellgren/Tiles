@@ -37,12 +37,20 @@ open class Tile: UIView {
         }
     }
     
-    required public init(frame: CGRect, index: Int, isPressed: Bool = false, latch: Bool = false, delegate: TileDelegate? = nil) {
+    public var isSelected: Bool = false {
+        didSet {
+            backgroundColor = isSelected ? .red : color
+        }
+    }
+    
+    required public init(frame: CGRect, index: Int, isPressed: Bool = false, latch: Bool = false, isSelected: Bool = false, delegate: TileDelegate? = nil) {
         self.index = index
         self.latch = latch
         self.isPressed = isPressed
+        self.isSelected = isSelected
         self.delegate = delegate
         super.init(frame: frame)
+        
         self.backgroundColor = color
     }
     
@@ -51,9 +59,7 @@ open class Tile: UIView {
     }
     
     open var color: UIColor {
-        let brightness = isPressed ? 0.7 : latch ? 0.3 : 0.2
-        let color = UIColor(red: brightness, green: brightness, blue: brightness, alpha: 1)
-        return color
+        isPressed ? .label : isSelected ? .red : latch ? .link : .separator
     }
     
     open func didPress(_ isPressed: Bool) {}
@@ -76,10 +82,11 @@ open class BasicTile: Tile {
         index: Int,
         isPressed: Bool = false,
         latch: Bool = false,
+        isSelected: Bool = false,
         delegate: TileDelegate? = nil
     ) {
-        super.init(frame: frame, index: index, isPressed: isPressed, latch: latch, delegate: delegate)
-        self.backgroundColor = color
+        super.init(frame: frame, index: index, isPressed: isPressed, latch: latch, isSelected: isSelected, delegate: delegate)
+        self.backgroundColor = isSelected ? .red : color
         self.addSubview(label)
     }
     
@@ -87,9 +94,7 @@ open class BasicTile: Tile {
         fatalError("init(coder:) has not been implemented")
     }
     
-    override open var color: UIColor {
-        isPressed ? .label : latch ? .link : .separator
-    }
+    
     
     override open func didPress(_ isPressed: Bool) {
         backgroundColor = color
