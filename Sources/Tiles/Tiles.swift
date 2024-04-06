@@ -25,48 +25,37 @@ public struct Tiles<T : Tile, C : TileContext>: UIViewControllerRepresentable {
             tileLayout: TileLayout(
                 horizontal: tileContext.horizontal,
                 forward: tileContext.forward,
-                ascending: tileContext.ascending
+                ascending: tileContext.ascending,
+                rows: tileContext.rows,
+                columns: tileContext.columns,
+                spacing: tileContext.spacing
             ),
             tileType: tile,
             latchTiles: tileContext.latchTiles,
-            selectedTile: tileContext.selectedTile,
-            rows: tileContext.rows,
-            columns: tileContext.columns,
-            spacing: tileContext.spacing
+            selectedTile: tileContext.selectedTile
         )
     }
     
     public func updateUIViewController(_ uiViewController: TileViewController<T>, context: Context) {
-        let vc = uiViewController
-        
-        if vc.rows != tileContext.rows {
-            vc.rows = tileContext.rows
-        }
-        
-        if vc.columns != tileContext.columns {
-            vc.columns = tileContext.columns
-        }
-        
-        if vc.spacing != tileContext.spacing {
-            vc.spacing = tileContext.spacing
-        }
-        
         let layout = TileLayout(
             horizontal: tileContext.horizontal,
             forward: tileContext.forward,
-            ascending: tileContext.ascending
+            ascending: tileContext.ascending,
+            rows: tileContext.rows,
+            columns: tileContext.columns,
+            spacing: tileContext.spacing
         )
         
-        if vc.tileLayout != layout {
-            vc.tileLayout = layout
+        if uiViewController.tileLayout != layout {
+            uiViewController.tileLayout = layout
         }
         
-        if vc.latchTiles != tileContext.latchTiles {
-            vc.latchTiles = tileContext.latchTiles
+        if uiViewController.latchTiles != tileContext.latchTiles {
+            uiViewController.latchTiles = tileContext.latchTiles
         }
         
-        if vc.selectedTile != tileContext.selectedTile {
-            vc.selectedTile = tileContext.selectedTile
+        if uiViewController.selectedTile != tileContext.selectedTile {
+            uiViewController.selectedTile = tileContext.selectedTile
         }
     }
     

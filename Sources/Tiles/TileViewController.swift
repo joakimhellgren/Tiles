@@ -5,12 +5,21 @@ public struct TileLayout: Equatable {
     var forward: Bool
     var ascending: Bool
     
+    var rows: Int
+    var columns: Int
+    
+    var spacing: Double
+    
     public init(
-        horizontal: Bool = true, forward: Bool = true, ascending: Bool = true
+        horizontal: Bool = true, forward: Bool = true, ascending: Bool = true,
+        rows: Int = 4, columns: Int = 4, spacing: Double = 1.0
     ) {
         self.horizontal = horizontal
-        self.forward = forward
-        self.ascending = ascending
+        self.forward = horizontal ? forward : !ascending
+        self.ascending = horizontal ? ascending : !forward
+        self.rows = rows
+        self.columns = columns
+        self.spacing = spacing
     }
 }
 
@@ -34,43 +43,25 @@ public class TileViewController<T: Tile>: UIViewController {
         view.subviews.forEach { $0.removeFromSuperview() }
         updateFrames()
         updateTiles()
-        updateIndices()
         tiles.forEach { view.addSubview($0) }
     }
     
-    public var rows: Int {
-        didSet {
-            scheduleLayoutUpdate()
-        }
-    }
-    public var columns: Int {
-        didSet {
-            scheduleLayoutUpdate()
-        }
-    }
-    public var spacing: Double {
-        didSet {
-            print("spacing updated")
-        }
-    }
     public var tileLayout: TileLayout {
         didSet {
-            print("layout updated")
-            DispatchQueue.main.async { [weak self] in
-                self?.updateIndices()
-            }
+            scheduleLayoutUpdate()
         }
     }
     var touchIndices = [Int]() {
         didSet {
-            
             tiles.forEach {
                 $0.isPressed = touchIndices.contains($0.index)
             }
         }
     }
     
-    public var tiles = [T]()
+    private var frames = [CGRect]()
+    private var tiles = [T]()
+    
     public var latchTiles: Bool = true
     var latchIndices = [Int]() {
         didSet {
@@ -97,18 +88,12 @@ public class TileViewController<T: Tile>: UIViewController {
         tileType: T.Type,
         latchTiles: Bool = true,
         selectedTile: Int? = nil,
-        rows: Int = 4,
-        columns: Int = 4,
         spacing: Double = 1.0
     ) {
         self.tileLayout = tileLayout
         self.latchTiles = latchTiles
         self.selectedTile = selectedTile
-        self.rows = rows
-        self.columns = columns
-        self.spacing = spacing
         super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
-        
     }
     
     public override func viewWillAppear(_ animated: Bool) {
@@ -142,8 +127,15 @@ public class TileViewController<T: Tile>: UIViewController {
         updateTouches()
     }
     
-    private var frames = [CGRect]()
+    
     private func updateFrames() {
+        let rows = tileLayout.rows
+        let columns = tileLayout.columns
+        let spacing = tileLayout.spacing
+        let horizontal = tileLayout.horizontal
+        let forward = tileLayout.forward
+        let ascending = tileLayout.ascending
+        
         let width = (view.frame.size.width - (spacing * CGFloat(rows - 1))) / CGFloat(rows)
         let height = (view.frame.size.height - (spacing * CGFloat(columns - 1))) / CGFloat(columns)
         
@@ -163,9 +155,8 @@ public class TileViewController<T: Tile>: UIViewController {
     }
     
     private func updateTiles() {
-        if !tiles.isEmpty {
-            tiles.removeAll()
-        }
+        let rows = tileLayout.rows
+        let columns = tileLayout.columns
         
         var newTiles = [T]()
         (0..<(columns*rows)).forEach {
@@ -178,6 +169,9 @@ public class TileViewController<T: Tile>: UIViewController {
     }
     
     private func updateIndices() {
+        let rows = tileLayout.rows
+        let columns = tileLayout.columns
+        
         (0..<(columns*rows)).forEach { index in
             let i = tileIndex(from: index)
             let tile = tiles[index]
@@ -204,6 +198,10 @@ public class TileViewController<T: Tile>: UIViewController {
     }
     
     private func tileIndex(from index: Int) -> Int {
+        let rows = tileLayout.rows
+        let columns = tileLayout.columns
+        let spacing = tileLayout.spacing
+        
         let horizontal = tileLayout.horizontal
         let forward = horizontal ? tileLayout.forward : !tileLayout.ascending
         let ascending = horizontal ? !tileLayout.ascending : tileLayout.forward
