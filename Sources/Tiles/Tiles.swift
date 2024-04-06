@@ -22,49 +22,52 @@ public struct Tiles<T : Tile, C : TileContext>: UIViewControllerRepresentable {
     
     public func makeUIViewController(context: Context) -> TileViewController<T> {
         TileViewController<T>(
-            spacing: tileContext.spacing,
-            horizontal: tileContext.horizontal,
-            forward: tileContext.forward,
-            ascending: tileContext.ascending,
-            rows: tileContext.rows,
-            columns: tileContext.columns,
+            tileLayout: TileLayout(
+                horizontal: tileContext.horizontal,
+                forward: tileContext.forward,
+                ascending: tileContext.ascending
+            ),
             tileType: tile,
             latchTiles: tileContext.latchTiles,
-            selectedTile: tileContext.selectedTile
+            selectedTile: tileContext.selectedTile,
+            rows: tileContext.rows,
+            columns: tileContext.columns,
+            spacing: tileContext.spacing
         )
     }
     
     public func updateUIViewController(_ uiViewController: TileViewController<T>, context: Context) {
         let vc = uiViewController
         
-        if vc.spacing != tileContext.spacing {
-            vc.spacing = tileContext.spacing
-        }
-        if vc.latchTiles != tileContext.latchTiles {
-            vc.latchTiles = tileContext.latchTiles
-        }
-        if vc.selectedTile != tileContext.selectedTile {
-            vc.selectedTile = tileContext.selectedTile
-        }
         if vc.rows != tileContext.rows {
             vc.rows = tileContext.rows
         }
+        
         if vc.columns != tileContext.columns {
             vc.columns = tileContext.columns
         }
         
-        if vc.forward != tileContext.forward {
-            vc.forward = tileContext.forward
+        if vc.spacing != tileContext.spacing {
+            vc.spacing = tileContext.spacing
         }
         
-        if vc.ascending != tileContext.ascending {
-            vc.ascending = tileContext.ascending
+        let layout = TileLayout(
+            horizontal: tileContext.horizontal,
+            forward: tileContext.forward,
+            ascending: tileContext.ascending
+        )
+        
+        if vc.tileLayout != layout {
+            vc.tileLayout = layout
         }
         
-        if vc.horizontal != tileContext.horizontal {
-            vc.horizontal = tileContext.horizontal
+        if vc.latchTiles != tileContext.latchTiles {
+            vc.latchTiles = tileContext.latchTiles
         }
         
+        if vc.selectedTile != tileContext.selectedTile {
+            vc.selectedTile = tileContext.selectedTile
+        }
     }
     
     public func makeCoordinator() -> Coordinator {

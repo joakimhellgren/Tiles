@@ -1,7 +1,11 @@
 import UIKit
 
 open class Tile: UIView {
-    public var index: Int
+    public var index: Int {
+        didSet {
+            label.text = "\(index)"
+        }
+    }
     
     open lazy var label: UILabel = {
         let label = UILabel()
