@@ -22,8 +22,8 @@ public class Tile: UIView {
     }
     
     required public init(
-        frame: CGRect,
         index: Int,
+        frame: CGRect = .zero,
         isPressed: Bool = false,
         latch: Bool = false,
         isSelected: Bool = false
@@ -37,7 +37,7 @@ public class Tile: UIView {
         self.configure()
     }
     
-    required public init?(coder: NSCoder) {
+    @available(*, unavailable) required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
@@ -48,13 +48,7 @@ public class Tile: UIView {
 }
 
 public class SolidTile: Tile {
-    private lazy var label: UILabel = {
-        let label = UILabel(frame: CGRect(x: 7, y: 7, width: 100, height: 15))
-        label.adjustsFontSizeToFitWidth = true
-        label.text = "\(index)"
-        label.textColor = .label
-        return label
-    }()
+    
     
     private var fillColor: UIColor {
         isPressed ? .link : latch ? .tertiaryLabel : .secondarySystemBackground
@@ -65,7 +59,7 @@ public class SolidTile: Tile {
     }
     
     private var labelColor: UIColor {
-        fillColor.luminance > 0.6 ? .black : .white
+        isPressed || latch ? .secondarySystemBackground : .link
     }
     
     public override func didPress() {
@@ -105,24 +99,12 @@ public class VibrantTile: Tile {
         return UIVisualEffectView(effect: blurEffect)
     }()
     
-    private lazy var label: UILabel = {
-        let label = UILabel(frame: CGRect(x: 7, y: 7, width: 100, height: 15))
-        label.adjustsFontSizeToFitWidth = true
-        label.text = "\(index)"
-        label.textColor = .label
-        return label
-    }()
-    
     private var fillColor: UIColor {
         isPressed ? .link : latch ? .secondaryLabel : .secondarySystemBackground
     }
     
     private var borderWidth: CGFloat {
         isSelected ? 3.0 : 1.0
-    }
-    
-    private var labelColor: UIColor {
-        fillColor.luminance > 0.6 ? .black : .white
     }
     
     private var borderColor: UIColor {
@@ -132,15 +114,17 @@ public class VibrantTile: Tile {
     public override func configure() {
         blurredEffectView.frame = bounds
         vibrancyEffectView.frame = bounds
-        
         vibrancyEffectView.contentView.backgroundColor = fillColor
         vibrancyEffectView.contentView.layer.borderColor = borderColor.cgColor
         vibrancyEffectView.contentView.layer.borderWidth = borderWidth
-        
         blurredEffectView.contentView.addSubview(vibrancyEffectView)
-        blurredEffectView.contentView.addSubview(label)
-        
         addSubview(blurredEffectView)
+        
+        let label = UILabel(frame: CGRect(x: 7, y: 7, width: 100, height: 15))
+        label.adjustsFontSizeToFitWidth = true
+        label.text = "\(index)"
+        label.textColor = .label
+        addSubview(label)
     }
  
     public override func didPress() {
