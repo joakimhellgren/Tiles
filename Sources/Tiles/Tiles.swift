@@ -3,7 +3,7 @@ import SwiftUI
 public struct Tiles<T: Tile, C : TileContext>: UIViewControllerRepresentable where C.T == T {
     @ObservedObject public var tileContext: C
     
-    public init(tileContext: C) {
+    public init(_ tileContext: C) {
         self.tileContext = tileContext
     }
     
