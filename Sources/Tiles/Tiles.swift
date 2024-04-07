@@ -1,6 +1,8 @@
 import SwiftUI
 
 public protocol TileContext: ObservableObject {
+    associatedtype T = Tile
+    var tile: T.Type { get }
     var rows: Int { get set }
     var columns: Int { get set }
     var forward: Bool { get set }
@@ -11,12 +13,10 @@ public protocol TileContext: ObservableObject {
     var selectedTile: Int? { get set }
 }
 
-public struct Tiles<T : Tile, C : TileContext>: UIViewControllerRepresentable {
-    public var tile: T.Type
+public struct Tiles<T: Tile, C : TileContext>: UIViewControllerRepresentable where C.T == T {
     @ObservedObject public var tileContext: C
     
-    public init(tile: T.Type, tileContext: C) {
-        self.tile = tile
+    public init(tileContext: C) {
         self.tileContext = tileContext
     }
     
@@ -30,7 +30,7 @@ public struct Tiles<T : Tile, C : TileContext>: UIViewControllerRepresentable {
                 columns: tileContext.columns,
                 spacing: tileContext.spacing
             ),
-            tileType: tile,
+            tileType: tileContext.tile,
             latchTiles: tileContext.latchTiles,
             selectedTile: tileContext.selectedTile
         )
