@@ -1,9 +1,9 @@
 import SwiftUI
 
-public struct Tiles<T: Tile, C : TileContext>: UIViewControllerRepresentable where C.T == T {
-    @ObservedObject public var tileContext: C
+public struct Tiles<T: Tile>: UIViewControllerRepresentable {
+    @ObservedObject public var tileContext: TileContext<T>
     
-    public init(_ tileContext: C) {
+    public init(_ tileContext: TileContext<T>) {
         self.tileContext = tileContext
     }
     
