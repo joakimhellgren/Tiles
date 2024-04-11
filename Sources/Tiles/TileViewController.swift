@@ -55,6 +55,10 @@ public class TileViewController<T: Tile>: UIViewController {
         scheduleLayoutUpdate()
     }
     
+    public override func viewDidLayoutSubviews() {
+        scheduleLayoutUpdate()
+    }
+    
     @available(*, unavailable) required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
