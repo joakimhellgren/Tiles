@@ -54,8 +54,7 @@ public class TileViewController<T: Tile>: UIViewController {
     public override func viewWillAppear(_ animated: Bool) {
         scheduleLayoutUpdate()
     }
-    
-    public override func viewDidLayoutSubviews() {
+    public override func systemLayoutFittingSizeDidChange(forChildContentContainer container: UIContentContainer) {
         scheduleLayoutUpdate()
     }
     
