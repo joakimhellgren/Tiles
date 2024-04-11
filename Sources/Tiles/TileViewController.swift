@@ -1,6 +1,11 @@
 import UIKit
 
+public protocol TileViewControllerDelegate: AnyObject {
+    func didUpdateSelectedTile(_ selectedTile: Int)
+}
+
 public class TileViewController<T: Tile>: UIViewController {
+    public weak var delegate: TileViewControllerDelegate?
     public var canLatch: Bool {
         didSet { resetTiles() }
     }
@@ -10,7 +15,12 @@ public class TileViewController<T: Tile>: UIViewController {
     }
     
     public var selectedTile: Int? {
-        didSet { tiles.forEach { $0.isSelected = $0.index == selectedTile } }
+        didSet {
+            tiles.forEach { $0.isSelected = $0.index == selectedTile }
+            if let selectedTile {
+                delegate?.didUpdateSelectedTile(selectedTile)
+            }
+        }
     }
     
     private static var touchCapacity: Int { 10 }
@@ -155,6 +165,8 @@ public class TileViewController<T: Tile>: UIViewController {
         let locations = touches.map { $0.location(in: view) }
         
         var touchIndices = self.touchIndices
+        var initialTouchIndex: Int?
+        
         tiles.forEach { tile in
             let isPressed = locations.first(where: {tile.frame.contains($0)}) != nil
             
@@ -163,6 +175,10 @@ public class TileViewController<T: Tile>: UIViewController {
                     latchIndices.removeAll(where: {$0 == tile.index})
                 } else {
                     latchIndices.append(tile.index)
+                }
+                
+                if initialTouchIndex == nil {
+                    initialTouchIndex = tile.index
                 }
             }
             
@@ -174,6 +190,9 @@ public class TileViewController<T: Tile>: UIViewController {
         }
         
         self.touchIndices = touchIndices
+        if let initialTouchIndex {
+            self.selectedTile = initialTouchIndex
+        }
     }
     
     private func resetTiles() {

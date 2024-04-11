@@ -54,16 +54,22 @@ public class SolidTile: Tile {
         isPressed ? .link : latch ? .tertiaryLabel : .secondarySystemBackground
     }
     
+    private var borderColor: UIColor {
+        isSelected ? .link : .quaternaryLabel
+    }
+    
     private var borderWidth: CGFloat {
         isSelected ? 3.0 : 1.0
     }
     
     private var labelColor: UIColor {
-        isPressed || latch ? .secondarySystemBackground : .link
+        isPressed ? .secondarySystemBackground : .label
     }
     
     public override func didPress() {
         backgroundColor = fillColor
+        layer.borderColor = borderColor.cgColor
+        label.textColor = labelColor
     }
     
     public override func didLatch() {
@@ -72,18 +78,22 @@ public class SolidTile: Tile {
     
     public override func didSelect() {
         layer.borderWidth = borderWidth
+        layer.borderColor = borderColor.cgColor
     }
     
-    public override func configure() {
-        self.backgroundColor = fillColor
-        self.layer.borderColor = UIColor.secondaryLabel.cgColor
-        self.layer.borderWidth = borderWidth
-        
+    private lazy var label: UILabel = {
         let label = UILabel(frame: CGRect(x: 7, y: 7, width: 100, height: 15))
         label.adjustsFontSizeToFitWidth = true
         label.text = "\(index)"
-        label.textColor = .label
-        self.addSubview(label)
+        label.textColor = labelColor
+        return label
+    }()
+    
+    public override func configure() {
+        self.backgroundColor = fillColor
+        self.layer.borderColor = borderColor.cgColor
+        self.layer.borderWidth = borderWidth
+        self.addSubview(self.label)
     }
 }
 
