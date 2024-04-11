@@ -1,43 +1,51 @@
 import SwiftUI
 
 public struct Tiles<T: Tile>: UIViewControllerRepresentable {
-    @ObservedObject public var tileContext: TileContext<T>
+    public var tile: T.Type
+    public var canLatch: Bool
+    public var layout: TileLayout
+    public var selectedTile: Binding<Int?>
     
-    public init(_ tileContext: TileContext<T>) {
-        self.tileContext = tileContext
+    public init(canLatch: Bool = true, layout: TileLayout = TileLayout(), selectedTile: Binding<Int?>, tile: T.Type) {
+        self.canLatch = canLatch
+        self.layout = layout
+        self.selectedTile = selectedTile
+        self.tile = tile
     }
     
     public func makeUIViewController(context: Context) -> TileViewController<T> {
-        TileViewController<T>(
-            layout: tileContext.layout,
-            tile: tileContext.tile,
-            canLatch: tileContext.canLatch,
-            selectedTile: tileContext.selectedTile
-        )
+        let vc = TileViewController<T>(layout: layout, tile: tile, canLatch: canLatch, selectedTile: selectedTile.wrappedValue)
+        vc.delegate = context.coordinator
+        return vc
     }
     
     public func updateUIViewController(_ uiViewController: TileViewController<T>, context: Context) {
-        if uiViewController.layout != tileContext.layout {
-            uiViewController.layout = tileContext.layout
+        if uiViewController.layout != layout {
+            uiViewController.layout = layout
         }
         
-        if uiViewController.canLatch != tileContext.canLatch {
-            uiViewController.canLatch = tileContext.canLatch
+        if uiViewController.canLatch != canLatch {
+            uiViewController.canLatch = canLatch
         }
         
-        if uiViewController.selectedTile != tileContext.selectedTile {
-            uiViewController.selectedTile = tileContext.selectedTile
+        if uiViewController.selectedTile != selectedTile.wrappedValue {
+            uiViewController.selectedTile = selectedTile.wrappedValue
         }
     }
+    
     
     public func makeCoordinator() -> Coordinator {
         Coordinator(self)
     }
     
-    public class Coordinator: NSObject {
+    public class Coordinator: NSObject, TileViewControllerDelegate {
         var parent: Tiles
         init(_ parent: Tiles) {
             self.parent = parent
+        }
+        
+        public func didUpdateSelectedTile(_ selectedTile: Int) {
+            self.parent.selectedTile.wrappedValue = selectedTile
         }
     }
 }
